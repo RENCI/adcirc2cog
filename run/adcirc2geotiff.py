@@ -45,8 +45,9 @@ def initialize_processing(app):
     Processing.initialize()
     return (app, processing)
 
+# Make output directory if it does not exist
 def makeDIRS(outputDIR):
-    # Create tiff directory path
+    # Create cogeo directory path
     if not os.path.exists(outputDIR):
         # mode = 0o755
         # os.makedirs(outputDIR, mode)
@@ -55,6 +56,7 @@ def makeDIRS(outputDIR):
     else:
         logger.info('Directory '+outputDIR.split('/')[-1]+' already made.')
 
+# Define parameters used in creating tiff
 def getParameters(dirPath, inputFile, outputDIR):
     tiffile = inputFile.split('.')[0]+'.raw.'+inputFile.split('.')[1]+'.tif'
     parms = '{"INPUT_EXTENT" : "-97.85833,-60.040029999999994,7.909559999999999,45.83612", "INPUT_GROUP" : 1, "INPUT_LAYER" : "'+dirPath+'input/'+inputFile+'", "INPUT_TIMESTEP" : 0,  "OUTPUT_RASTER" : "'+outputDIR+'/'+tiffile+'", "MAP_UNITS_PER_PIXEL" : 0.005}'
@@ -117,66 +119,51 @@ def exportRaster(parameters):
     if layer.isValid() is False: 
         raise Exception('Invalid mesh')
 
-# Move raw tiff file to final/tiff
-def moveRaw(inputFile, outputDIR, finalDIR):
-    # Create final/tiff directory path
-    if not os.path.exists(finalDIR):
-        mode = 0o755
-        # os.makedirs(finalDIR, mode)
-        os.makedirs(finalDIR, exist_ok=True)
-        logger.info('Made directory '+finalDIR.split('/')[-1]+ '.')
-    else:
-        logger.info('Directory '+finalDIR.split('/')[-1]+' already made.')
-
-    tiffraw = inputFile.split('.')[0]+'.raw.'+inputFile.split('.')[1]+'.tif'
-    # Check if raw tiff exists, and move it.
-    if os.path.exists(outputDIR+'/'+tiffraw):
-        shutil.move(outputDIR+'/'+tiffraw, finalDIR+'/'+tiffraw)
-        os.remove(outputDIR+'/'+tiffraw+'.aux.xml')
-        logger.info('Moved raw tiff file '+tiffraw+ 'to final/tiff directory.')
-    else:
-        logger.info('Raw tiff file '+rawtiff+' does not exist.')
-
 @logger.catch
 def main(args):
+    # get input variables from args
     inputFile = args.inputFile
-
     outputDIR = args.outputDIR
-    finalDIR = args.finalDIR
 
-    dirPath = "/".join(outputDIR.split('/')[0:-1])+'/'
-
+    # Remove old logger and start new one
     logger.remove()
     log_path = os.getenv('LOG_PATH', os.path.join(os.path.dirname(__file__), 'logs'))
-    logger.add(log_path+'/adcirc2geotiff-logs.log', level='DEBUG')
+    logger.add(log_path+'/adcirc2geotiff.log', level='DEBUG')
 
+    # Define dirPath above ouput directory
+    dirPath = "/".join(outputDIR.split('/')[0:-1])+'/'
+
+    # Check to see if input directory exits and if it does create tiff
     if os.path.exists(dirPath+'input/'+inputFile):
         # When error exit program
         logger.add(lambda _: sys.exit(1), level="ERROR")
 
+        # Make output directory
         makeDIRS(outputDIR.strip())
 
+        # Set QGIS environment 
         os.environ['QT_QPA_PLATFORM']='offscreen'
         xdg_runtime_dir = '/run/user/adcirc2geotiff'
         os.makedirs(xdg_runtime_dir, exist_ok=True)
         os.environ['XDG_RUNTIME_DIR']=xdg_runtime_dir
         logger.info('Set QGIS enviroment.')
 
+        # Initialize QGIS
         app = initialize_qgis_application() 
         app.initQgis()
         app, processing = initialize_processing(app)
         logger.info('Initialzed QGIS.')
 
+        # get parameters to create tiff from ADCIRC mesh file
         parameters = getParameters(dirPath, inputFile.strip(), outputDIR.strip())
         logger.info('Got mesh regrid paramters for '+inputFile.strip())
 
+        # Create raw tiff file 
         filename = exportRaster(parameters)
 
+        # Quit QGIS
         app.exitQgis()
         logger.info('Quit QGIS')
-
-        moveRaw(inputFile, outputDIR, finalDIR)
-        logger.info('Moved float64 tiff file')
 
     else:
          logger.info(inputFile+' does not exist')
@@ -189,7 +176,6 @@ if __name__ == "__main__":
     # Optional argument which requires a parameter (eg. -d test)
     parser.add_argument("--inputFile", action="store", dest="inputFile")
     parser.add_argument("--outputDIR", action="store", dest="outputDIR")
-    parser.add_argument("--finalDIR", action="store", dest="finalDIR")
 
     args = parser.parse_args()
     main(args)
