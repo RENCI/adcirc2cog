@@ -33,7 +33,7 @@ When running the container in Kubernetes the command line for adcirc2geotiff.py 
 
     conda run -n adcirc2cog python adcirc2geotiff.py --inputFile maxele.63.nc --outputDIR /xxxx/xxxxxxxxxx/cogeo 
 
-    and the command line for geotiff2cog.p is:
+and the command line for geotiff2cog.p is:
 
     conda run -n adcirc2cog python geotiff2cog.py --inputFile maxele.raw.63.tif --inputDIR /data/sj37392jdj28538/cogeo --finalDIR /data/sj37392jdj28538/final/cogeo
 
