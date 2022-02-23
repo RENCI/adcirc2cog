@@ -5,7 +5,7 @@ dependencies:
   - python=3.7
   - qgis=3.16.3
   - netcdf4
-  - rio-cogeo
   - pip
   - pip:
+      - rio-cogeo
       - loguru
