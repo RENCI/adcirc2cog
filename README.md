@@ -9,7 +9,7 @@ This repo has software that creates a geotiff, and then converts it to a Cloud O
 
   To create a stand alone container for testing use the command shown below:
 
-    docker run -ti --name adcirc2cog --volume /directory/path/to/storage:/data/sj37392jdj28538 -d adcirc2cog /bin/bash
+    docker run -ti --name adcirc2cog_latest --volume /directory/path/to/storage:/data/sj37392jdj28538 -d adcirc2cog /bin/bash
 
   After the container has been created, you can access it using the following command:
 
