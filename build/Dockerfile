@@ -45,7 +45,7 @@ RUN mkdir /repos
 WORKDIR /repos
 
 # get the repo
-RUN git clone https://github.com/renci/adcirc2cog.git
+RUN git clone https://github.com/RENCI/adcirc2cog.git
 
 # change to the run directory                        
 WORKDIR /repos/adcirc2cog/run
