@@ -3,7 +3,7 @@ This repo has software that creates a geotiff, and then converts it to a Cloud O
 
 ## Build
   cd build  
-  docker build -t adcirc2cog_image .
+  docker build -t adcirc2cog:latest .
 
 ## Create Container
 
@@ -13,7 +13,7 @@ This repo has software that creates a geotiff, and then converts it to a Cloud O
 
   After the container has been created, you can access it using the following command:
 
-    docker exec -it adcirc2cog bash
+    docker exec -it adcirc2cog_latest bash
 
   To create tiffs and cogs you must first activate the conda enviroment using the following command:
 
