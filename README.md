@@ -1,5 +1,5 @@
 # adcirc2cog
-The repo has software the creates and geotiff, and then converts is the a Cloud Optimized Geotiff (COG)
+This repo has software that creates a geotiff, and then converts it to a Cloud Optimized Geotiff (COG)
 
 ## Build
   cd build  
