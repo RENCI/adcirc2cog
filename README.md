@@ -31,11 +31,11 @@ This repo has software that creates a geotiff, and then converts it to a Cloud O
 
 When running the container in Kubernetes the command line for adcirc2geotiff.py is:
 
-    conda run -n adcirc2cog python adcirc2geotiff.py --inputFile maxele.63.nc --inputDIR /data/sj37392jdj28538/input --outputDIR /xxxx/xxxxxxxxxx/cogeo 
+    conda run -n adcirc2cog python adcirc2geotiff.py --inputFile maxele.63.nc --inputDIR /xxxx/xxxxxxxxxx/input --outputDIR /xxxx/xxxxxxxxxx/cogeo 
 
 and the command line for geotiff2cog.p is:
 
-    conda run -n adcirc2cog python geotiff2cog.py --inputFile maxele.raw.63.tif --inputDIR /data/sj37392jdj28538/cogeo --finalDIR /data/sj37392jdj28538/final/cogeo
+    conda run -n adcirc2cog python geotiff2cog.py --inputFile maxele.raw.63.tif --inputDIR /xxxx/xxxxxxxxxx/cogeo --finalDIR /xxxx/xxxxxxxxxx/final/cogeo
 
 Where /xxxx/xxxxxxxxxx would be a specified directory path.
  
