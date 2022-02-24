@@ -57,9 +57,9 @@ def makeDIRS(outputDIR):
         logger.info('Directory '+outputDIR.split('/')[-1]+' already made.')
 
 # Define parameters used in creating tiff
-def getParameters(dirPath, inputFile, outputDIR):
+def getParameters(inputDIR, inputFile, outputDIR):
     tiffile = inputFile.split('.')[0]+'.raw.'+inputFile.split('.')[1]+'.tif'
-    parms = '{"INPUT_EXTENT" : "-97.85833,-60.040029999999994,7.909559999999999,45.83612", "INPUT_GROUP" : 1, "INPUT_LAYER" : "'+dirPath+'input/'+inputFile+'", "INPUT_TIMESTEP" : 0,  "OUTPUT_RASTER" : "'+outputDIR+'/'+tiffile+'", "MAP_UNITS_PER_PIXEL" : 0.005}'
+    parms = '{"INPUT_EXTENT" : "-97.85833,-60.040029999999994,7.909559999999999,45.83612", "INPUT_GROUP" : 1, "INPUT_LAYER" : "'+inputDIR+'/'+inputFile+'", "INPUT_TIMESTEP" : 0,  "OUTPUT_RASTER" : "'+outputDIR+'/'+tiffile+'", "MAP_UNITS_PER_PIXEL" : 0.005}'
     return(json.loads(parms))
 
 # Convert mesh layer as raster and save as a GeoTiff
@@ -123,6 +123,7 @@ def exportRaster(parameters):
 def main(args):
     # get input variables from args
     inputFile = args.inputFile
+    inputDIR = args.inputDIR
     outputDIR = args.outputDIR
 
     # Remove old logger and start new one
@@ -130,11 +131,8 @@ def main(args):
     log_path = os.getenv('LOG_PATH', os.path.join(os.path.dirname(__file__), 'logs'))
     logger.add(log_path+'/adcirc2geotiff.log', level='DEBUG')
 
-    # Define dirPath above ouput directory
-    dirPath = "/".join(outputDIR.split('/')[0:-1])+'/'
-
     # Check to see if input directory exits and if it does create tiff
-    if os.path.exists(dirPath+'input/'+inputFile):
+    if os.path.exists(inputDIR+'/'+inputFile):
         # When error exit program
         logger.add(lambda _: sys.exit(1), level="ERROR")
 
@@ -155,7 +153,7 @@ def main(args):
         logger.info('Initialzed QGIS.')
 
         # get parameters to create tiff from ADCIRC mesh file
-        parameters = getParameters(dirPath, inputFile.strip(), outputDIR.strip())
+        parameters = getParameters(inputDIR, inputFile.strip(), outputDIR.strip())
         logger.info('Got mesh regrid paramters for '+inputFile.strip())
 
         # Create raw tiff file 
@@ -175,6 +173,7 @@ if __name__ == "__main__":
 
     # Optional argument which requires a parameter (eg. -d test)
     parser.add_argument("--inputFile", action="store", dest="inputFile")
+    parser.add_argument("--inputDIR", action="store", dest="inputDIR")
     parser.add_argument("--outputDIR", action="store", dest="outputDIR")
 
     args = parser.parse_args()
