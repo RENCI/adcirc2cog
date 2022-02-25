@@ -66,6 +66,7 @@ def getParameters(inputDIR, inputFile, outputDIR):
 @ignore_warnings
 def exportRaster(parameters):
     # Open layer from inputFile 
+    logger.info('Open layer from inputFile')
     inputFile = 'Ugrid:'+'"'+parameters['INPUT_LAYER']+'"'
     meshfile = inputFile.strip().split('/')[-1]
     meshlayer = meshfile.split('.')[0]
@@ -80,6 +81,7 @@ def exportRaster(parameters):
     # Check if layer is valid
     if layer.isValid() is True:
         # Get parameters for processing
+        logger.info('Get parameters')
         dataset  = parameters['INPUT_GROUP'] 
         timestep = parameters['INPUT_TIMESTEP']
         mupp = parameters['MAP_UNITS_PER_PIXEL'] 
@@ -89,25 +91,32 @@ def exportRaster(parameters):
         height = extent.height()/mupp 
         crs = layer.crs() 
         crs.createFromSrid(4326)
+
+        logger.info('Project instance')
         transform_context = QgsProject.instance().transformContext()
         output_format = QgsRasterFileWriter.driverForExtension(os.path.splitext(output_layer)[1])
 
         # Open output file for writing
+        logger.info('Open output file')
         rfw = QgsRasterFileWriter(output_layer)
         rfw.setOutputProviderKey('gdal') 
         rfw.setOutputFormat(output_format) 
 
         # Create one band raster
+        logger.info('Create one band raster')
         rdp = rfw.createOneBandRaster( Qgis.Float64, width, height, extent, crs)
 
         # Get dataset index
+        logger.info('Get data set index')
         dataset_index = QgsMeshDatasetIndex(dataset, timestep)
 
         # Regred mesh layer to raster
+        logger.info('Regrid mesh layer')
         block = QgsMeshUtils.exportRasterBlock( layer, dataset_index, crs,
                 transform_context, mupp, extent) 
 
         # Write raster to GeoTiff file
+        logger.info('Write raster Geotiff file')
         rdp.writeBlock(block, 1)
         rdp.setNoDataValue(1, block.noDataValue())
         rdp.setEditable(False)
