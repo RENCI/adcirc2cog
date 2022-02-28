@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import os, sys, argparse, shutil, json, warnings
+import netCDF4 as nc
+from pathlib import Path
 from loguru import logger
 from functools import wraps
-import netCDF4 as nc
 
 from PyQt5.QtGui import QColor
 from qgis.core import (
@@ -46,20 +47,20 @@ def initialize_processing(app):
     return (app, processing)
 
 # Make output directory if it does not exist
-def makeDIRS(outputDIR):
+def makeDirs(outputDir):
     # Create cogeo directory path
-    if not os.path.exists(outputDIR):
+    if not os.path.exists(outputDir):
         # mode = 0o755
-        # os.makedirs(outputDIR, mode)
-        os.makedirs(outputDIR, exist_ok=True)
-        logger.info('Made directory '+outputDIR.split('/')[-1]+ '.')
+        # os.makedirs(outputDir, mode)
+        os.makedirs(outputDir, exist_ok=True)
+        logger.info('Made directory '+Path(outputDir).parts[-1]+ '.')
     else:
-        logger.info('Directory '+outputDIR.split('/')[-1]+' already made.')
+        logger.info('Directory '+Path(outputDir).parts[-1]+' already made.')
 
 # Define parameters used in creating tiff
-def getParameters(inputDIR, inputFile, outputDIR):
+def getParameters(inputDir, inputFile, outputDir):
     tiffile = inputFile.split('.')[0]+'.raw.'+inputFile.split('.')[1]+'.tif'
-    parms = '{"INPUT_EXTENT" : "-97.85833,-60.040029999999994,7.909559999999999,45.83612", "INPUT_GROUP" : 1, "INPUT_LAYER" : "'+inputDIR+'/'+inputFile+'", "INPUT_TIMESTEP" : 0,  "OUTPUT_RASTER" : "'+outputDIR+'/'+tiffile+'", "MAP_UNITS_PER_PIXEL" : 0.005}'
+    parms = '{"INPUT_EXTENT" : "-97.85833,-60.040029999999994,7.909559999999999,45.83612", "INPUT_GROUP" : 1, "INPUT_LAYER" : "'+inputDir+inputFile+'", "INPUT_TIMESTEP" : 0,  "OUTPUT_RASTER" : "'+outputDir+tiffile+'", "MAP_UNITS_PER_PIXEL" : 0.005}'
     return(json.loads(parms))
 
 # Convert mesh layer as raster and save as a GeoTiff
@@ -132,21 +133,21 @@ def exportRaster(parameters):
 def main(args):
     # get input variables from args
     inputFile = args.inputFile
-    inputDIR = args.inputDIR
-    outputDIR = args.outputDIR
+    inputDir = os.path.join(args.inputDir, '')
+    outputDir = os.path.join(args.outputDir, '')
 
     # Remove old logger and start new one
     logger.remove()
-    log_path = os.getenv('LOG_PATH', os.path.join(os.path.dirname(__file__), 'logs'))
-    logger.add(log_path+'/adcirc2geotiff.log', level='DEBUG')
+    log_path = os.path.join(os.getenv('LOG_PATH', os.path.join(os.path.dirname(__file__), 'logs')), '')
+    logger.add(log_path+'adcirc2geotiff_vcog.log', level='DEBUG')
 
     # Check to see if input directory exits and if it does create tiff
-    if os.path.exists(inputDIR+'/'+inputFile):
+    if os.path.exists(inputDir+inputFile):
         # When error exit program
         logger.add(lambda _: sys.exit(1), level="ERROR")
 
         # Make output directory
-        makeDIRS(outputDIR.strip())
+        makeDirs(outputDir.strip())
 
         # Set QGIS environment 
         os.environ['QT_QPA_PLATFORM']='offscreen'
@@ -162,7 +163,7 @@ def main(args):
         logger.info('Initialzed QGIS.')
 
         # get parameters to create tiff from ADCIRC mesh file
-        parameters = getParameters(inputDIR, inputFile.strip(), outputDIR.strip())
+        parameters = getParameters(inputDir, inputFile.strip(), outputDir.strip())
         logger.info('Got mesh regrid paramters for '+inputFile.strip())
 
         # Create raw tiff file 
@@ -181,9 +182,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     # Optional argument which requires a parameter (eg. -d test)
-    parser.add_argument("--inputFile", action="store", dest="inputFile")
-    parser.add_argument("--inputDIR", action="store", dest="inputDIR")
-    parser.add_argument("--outputDIR", action="store", dest="outputDIR")
+    parser.add_argument("--inputFILE", "--inputFile", help="Input file name", action="store", dest="inputFile")
+    parser.add_argument("--inputDIR", "--inputDir", help="Input directory path", action="store", dest="inputDir")
+    parser.add_argument("--outputDIR", "--outputDir",  help="Output directory path", action="store", dest="outputDir")
 
     args = parser.parse_args()
     main(args)
