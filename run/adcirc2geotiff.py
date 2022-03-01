@@ -184,7 +184,7 @@ if __name__ == "__main__":
     # Optional argument which requires a parameter (eg. -d test)
     parser.add_argument("--inputFILE", "--inputFile", help="Input file name", action="store", dest="inputFile")
     parser.add_argument("--inputDIR", "--inputDir", help="Input directory path", action="store", dest="inputDir")
-    parser.add_argument("--outputDIR", "--outputDir",  help="Output directory path", action="store", dest="outputDir")
+    parser.add_argument("--outputDIR", "--outputDir", help="Output directory path", action="store", dest="outputDir")
 
     args = parser.parse_args()
     main(args)
