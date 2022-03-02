@@ -1,10 +1,12 @@
 #!/usr/bin/env python
+# Import Python modules
 import os, sys, argparse, shutil, json, warnings
 import netCDF4 as nc
 from pathlib import Path
 from loguru import logger
 from functools import wraps
 
+# Import QGIS modules
 from PyQt5.QtGui import QColor
 from qgis.core import (
     Qgis,
@@ -66,13 +68,15 @@ def getParameters(inputDir, inputFile, outputDir):
 # Convert mesh layer as raster and save as a GeoTiff
 @ignore_warnings
 def exportRaster(parameters):
-    # Open layer from inputFile 
-    logger.info('Open layer from inputFile')
+    # Open layer from INPUT_LAYER
+    logger.info('Open layer from INPUT_LAYER')
     inputFile = 'Ugrid:'+'"'+parameters['INPUT_LAYER']+'"'
     meshfile = inputFile.strip().split('/')[-1]
     meshlayer = meshfile.split('.')[0]
     layer = QgsMeshLayer(inputFile, meshlayer, 'mdal')
 
+    # Open INPUT_LAYER with netCDF4, and check its dimensions. If dimensions are incorrect exit program
+    logger.info('Check INPUT_LAYER dimensions')
     ds = nc.Dataset(parameters['INPUT_LAYER'])
     for dim in ds.dimensions.values():
         if dim.size == 0:
@@ -93,7 +97,8 @@ def exportRaster(parameters):
         crs = layer.crs() 
         crs.createFromSrid(4326)
 
-        logger.info('Project instance')
+        # Transform instance
+        logger.info('Transform instance')
         transform_context = QgsProject.instance().transformContext()
         output_format = QgsRasterFileWriter.driverForExtension(os.path.splitext(output_layer)[1])
 
@@ -182,9 +187,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     # Optional argument which requires a parameter (eg. -d test)
-    parser.add_argument("--inputFILE", "--inputFile", help="Input file name", action="store", dest="inputFile")
-    parser.add_argument("--inputDIR", "--inputDir", help="Input directory path", action="store", dest="inputDir")
-    parser.add_argument("--outputDIR", "--outputDir", help="Output directory path", action="store", dest="outputDir")
+    parser.add_argument("--inputFILE", "--inputFile", help="Input file name", action="store", dest="inputFile", required=True)
+    parser.add_argument("--inputDIR", "--inputDir", help="Input directory path", action="store", dest="inputDir", required=True)
+    parser.add_argument("--outputDIR", "--outputDir", help="Output directory path", action="store", dest="outputDir", required=True)
 
     args = parser.parse_args()
     main(args)
