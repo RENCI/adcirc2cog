@@ -1,4 +1,4 @@
-i!/usr/bin/env python
+#!/usr/bin/env python
 # Import Python modules
 import os, sys, argparse, shutil, json, warnings
 import netCDF4 as nc
