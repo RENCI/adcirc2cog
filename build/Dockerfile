@@ -34,21 +34,33 @@ RUN apt-get clean && apt-get --allow-releaseinfo-change update &&\
 RUN conda update conda && \
     conda config --add channels conda-forge
 
-WORKDIR /app
+# add user nru
+RUN useradd -m -d /home/nru -u 1000 nru
+RUN chmod 777 /home/nru
+USER nru
+
+# make app directory in nru
+RUN mkdir /home/nru/app
+WORKDIR /home/nru/app
+RUN chmod 777 -R .
 
 # Create the environment, initialize conda in bash config files, and install repos:
 COPY environment.yml .
 RUN conda env create -f environment.yml
 
 # make d directory for the repos and go there
-RUN mkdir /repos
-WORKDIR /repos
+RUN mkdir /home/nru/repos
+WORKDIR /home/nru/repos
+RUN chmod 777 -R .
 
 # get the repo
 RUN git clone https://github.com/RENCI/adcirc2cog.git
 
 # change to the run directory                        
-WORKDIR /repos/adcirc2cog/run
+WORKDIR /home/nru/repos/adcirc2cog/run
 
 # set the python path
-ENV PYTHONPATH=/repos/adcirc2cog
+ENV PYTHONPATH=/home/nru/repos/adcirc2cog
+
+# tell conda what the shell is
+RUN conda init bash

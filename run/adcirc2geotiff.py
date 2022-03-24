@@ -1,8 +1,7 @@
-#!/usr/bin/env python
+i!/usr/bin/env python
 # Import Python modules
 import os, sys, argparse, shutil, json, warnings
 import netCDF4 as nc
-from pathlib import Path
 from loguru import logger
 from functools import wraps
 
@@ -55,9 +54,9 @@ def makeDirs(outputDir):
         # mode = 0o755
         # os.makedirs(outputDir, mode)
         os.makedirs(outputDir, exist_ok=True)
-        logger.info('Made directory '+Path(outputDir).parts[-1]+ '.')
+        logger.info('Made directory '+outputDir+ '.')
     else:
-        logger.info('Directory '+Path(outputDir).parts[-1]+' already made.')
+        logger.info('Directory '+outputDir+' already made.')
 
 # Define parameters used in creating tiff
 def getParameters(inputDir, inputFile, outputDir):
@@ -156,7 +155,7 @@ def main(args):
 
         # Set QGIS environment 
         os.environ['QT_QPA_PLATFORM']='offscreen'
-        xdg_runtime_dir = '/run/user/adcirc2geotiff'
+        xdg_runtime_dir = '/home/nru/adcirc2geotiff'
         os.makedirs(xdg_runtime_dir, exist_ok=True)
         os.environ['XDG_RUNTIME_DIR']=xdg_runtime_dir
         logger.info('Set QGIS enviroment.')
