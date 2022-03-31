@@ -30,7 +30,7 @@ def geotiff2cog(inputFile, inputDir, finalDir):
 
     # Difine command to create cog
     cmds_list = [
-      ['rio', 'cogeo', 'create',  tiffFile, inputDir+outputFile]
+      ['rio', 'cogeo', 'create',  tiffFile, inputDir+outputFile, '--web-optimized']
     ]
 
     # Define process list of commands

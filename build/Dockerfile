@@ -14,7 +14,7 @@
 # file and 7 GB for the color tiff file, for a total of 22 GB.
 # set the base image
 ##############
-FROM continuumio/miniconda
+FROM continuumio/miniconda3
 
 # author
 MAINTAINER Jim McManus
