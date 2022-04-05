@@ -18,7 +18,9 @@ def geotiff2cog(inputFile, inputDir, finalDir):
     tiffFile = inputDir+inputFile
 
     # Define ouput cog file name
-    outputFile = ".".join(inputFile.split('.')[0:3])+'.cog.tif'
+    inputFileList = inputFile.split('.')
+    inputFileList.insert(-1,'cog')
+    outputFile = ".".join(inputFileList)
 
     # Remove cog file if it already exits
     if os.path.exists(inputDir+outputFile):

@@ -60,8 +60,11 @@ def makeDirs(outputDir):
 
 # Define parameters used in creating tiff
 def getParameters(inputDir, inputFile, outputDir):
-    tiffile = inputFile.split('.')[0]+'.raw.'+inputFile.split('.')[1]+'.tif'
-    parms = '{"INPUT_EXTENT" : "-97.85833,-60.040029999999994,7.909559999999999,45.83612", "INPUT_GROUP" : 1, "INPUT_LAYER" : "'+inputDir+inputFile+'", "INPUT_TIMESTEP" : 0,  "OUTPUT_RASTER" : "'+outputDir+tiffile+'", "MAP_UNITS_PER_PIXEL" : 0.005}'
+    inputFileList = inputFile.split('.')
+    inputFileList.insert(1,'raw')
+    inputFileList[-1] = 'tif'
+    tiffFile = ".".join(inputFileList)
+    parms = '{"INPUT_EXTENT" : "-97.85833,-60.040029999999994,7.909559999999999,45.83612", "INPUT_GROUP" : 1, "INPUT_LAYER" : "'+inputDir+inputFile+'", "INPUT_TIMESTEP" : 0,  "OUTPUT_RASTER" : "'+outputDir+tiffFile+'", "MAP_UNITS_PER_PIXEL" : 0.005}'
     return(json.loads(parms))
 
 # Convert mesh layer as raster and save as a GeoTiff
