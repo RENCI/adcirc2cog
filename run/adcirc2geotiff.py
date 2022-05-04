@@ -69,13 +69,16 @@ def getParameters(inputDir, inputFile, outputDir, outputFile, inputExtent, timeS
 
 @ignore_warnings
 class mesh2tiff:
-    def __init__(self, inputDir, outputDir, inputFile):
+    def __init__(self, inputDir, outputDir, inputFile, tmpDir):
         # Open layer from INPUT_LAYER
         logger.info('Open layer from input '+inputDir+inputFile+' file.')
         inputMeshFile = 'Ugrid:'+'"'+inputDir+inputFile+'"'
         meshFile = inputFile.strip().split('/')[-1]
         meshLayer = meshFile.split('.')[0]
         self.layer = QgsMeshLayer(inputMeshFile, meshLayer, 'mdal')
+
+        # Define self.tmpDir
+        self.tmpDir = tmpDir
 
         # Open INPUT_LAYER with netCDF4, and check its dimensions. If dimensions are incorrect exit program
         logger.info('Check INPUT_LAYER '+inputDir+inputFile+' dimensions')
@@ -101,7 +104,7 @@ class mesh2tiff:
 
             # Define fileDateTime
             fileDateTime = datetime.fromisoformat(str(base_date + timedelta(seconds=times[0]))).strftime("%Y%m%dT%H%M%S")
-
+ 
             # Define input extent parameters to create tiff from ADCIRC mesh file
             inputExtents = ['-77.85833,-60.040029999999994,36.0,45.83612',
                             '-97.85833,-81.0,23.0,31.273088',
@@ -152,19 +155,13 @@ class mesh2tiff:
                 # Define fileDateTime
                 fileDateTime = datetime.fromisoformat(str(base_date + timedelta(seconds=times[i]))).strftime("%Y%m%dT%H%M%S")
 
-                #j = 0
-
-                #for inputExtent in inputExtents:
                 inputFileList = inputFile.split('.')
                 inputFileList.insert(2,'raw')
-                #inputFileList.insert(2,'subset'+str(j))
                 inputFileList.insert(2,fileDateTime)
                 inputFileList[-1] = 'tif'
                 outputFile = ".".join(inputFileList)
 
                 inputs_list.append([inputDir, inputFile, outputDir, outputFile, inputExtent, timeStep, mapUnitPP])
-
-                #    j = j + 1
 
                 i = i + 1
 
@@ -229,8 +226,10 @@ class mesh2tiff:
 
             # Regred mesh layer to raster
             logger.info('Regrid mesh layer '+inputDir+inputFile+'.' )
+            os.chdir(self.tmpDir)
             block = QgsMeshUtils.exportRasterBlock( self.layer, dataset_index, crs,
                     transform_context, mupp, extent) 
+            os.chdir('/home/nru/repos/adcirc2cog/run')
 
             # Write raster to GeoTiff file
             logger.info('Write raster Geotiff ('+output_layer+') file.')
@@ -253,6 +252,9 @@ def main(args):
     inputFile = args.inputFile
     outputDir = os.path.join(outputDir+"".join(inputFile[:-3].split('.')), '')
 
+    # Define tmp directory
+    tmpDir = "/".join(inputDir.split("/")[:-2])+"/qgis_tmp/"
+
     # Remove old logger and start new one
     logger.remove()
     log_path = os.path.join(os.getenv('LOG_PATH', os.path.join(os.path.dirname(__file__), 'logs')), '')
@@ -271,6 +273,8 @@ def main(args):
         xdg_runtime_dir = '/home/nru/adcirc2geotiff'
         os.makedirs(xdg_runtime_dir, exist_ok=True)
         os.environ['XDG_RUNTIME_DIR']=xdg_runtime_dir
+        os.makedirs(tmpDir, exist_ok=True)
+        os.environ['TMPDIR'] = tmpDir
         logger.info('Set QGIS enviroment.')
 
         # Initialize QGIS
@@ -280,11 +284,14 @@ def main(args):
         logger.info('Initialzed QGIS.')
 
         # Run mesh2tiff and producer tiff files
-        mesh2tiff(inputDir, outputDir, inputFile)
+        mesh2tiff(inputDir, outputDir, inputFile, tmpDir)
 
         # Quit QGIS
         app.exitQgis()
         logger.info('Quit QGIS')
+
+        # Remove tmpDir
+        os.rmdir(tmpDir)
 
     else:
          logger.info(inputFile+' does not exist')
