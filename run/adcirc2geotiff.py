@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # Import Python modules
-import os, sys, argparse, shutil, json, warnings
+import os, sys, argparse, shutil, json, warnings, pdb
 import netCDF4 as nc
 import numpy as np
 from datetime import datetime
@@ -172,26 +172,23 @@ class mesh2tiff:
             logger.info('Incorrect times length')
             sys.exit(1)
 
-        # Define queue
-        input_q = PQueue()
-
         # Run exportRaster using multiprocessinng for loop, and imput_list
         logger.info('Run exportRaster in for loop, with inputs_list')
         for inputList in inputs_list:
-           exportRaster(inputList) 
+           self.exportRaster(inputList) 
 
         self.layer = None
 
     # Convert mesh layer as raster and save as a GeoTiff
     def exportRaster(self, inputList):
         # Get input from inputList
-        inputDir = inputList[1][0]
-        inputFile = inputList[1][1]
-        outputDir = inputList[1][2]
-        outputFile = inputList[1][3]
-        inputExtent = inputList[1][4]
-        timeStep = inputList[1][5]
-        mapUnitPP = inputList[1][6]
+        inputDir = inputList[0]
+        inputFile = inputList[1]
+        outputDir = inputList[2]
+        outputFile = inputList[3]
+        inputExtent = inputList[4]
+        timeStep = inputList[5]
+        mapUnitPP = inputList[6]
 
         # Get parameters
         parameters = getParameters(inputDir, inputFile, outputDir, outputFile, inputExtent, timeStep, mapUnitPP)
