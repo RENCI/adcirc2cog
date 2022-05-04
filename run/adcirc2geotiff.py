@@ -291,7 +291,7 @@ def main(args):
         logger.info('Quit QGIS')
 
         # Remove tmpDir
-        os.rmdir(tmpDir)
+        shutil.rmtree(tmpDir)
 
     else:
          logger.info(inputFile+' does not exist')
