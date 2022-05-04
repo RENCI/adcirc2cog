@@ -253,7 +253,7 @@ def main(args):
     outputDir = os.path.join(outputDir+"".join(inputFile[:-3].split('.')), '')
 
     # Define tmp directory
-    tmpDir = "/".join(inputDir.split("/")[:-2])+"/qgis_tmp/"
+    tmpDir = "/".join(inputDir.split("/")[:-2])+"/"+inputFile.split('.')[0]+"_qgis_tmp/"
 
     # Remove old logger and start new one
     logger.remove()
@@ -291,7 +291,7 @@ def main(args):
         logger.info('Quit QGIS')
 
         # Remove tmpDir
-        shutil.rmtree(tmpDir)
+        #shutil.rmtree(tmpDir)
 
     else:
          logger.info(inputFile+' does not exist')
