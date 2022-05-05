@@ -279,10 +279,10 @@ def main(args):
 
         # Check if tmpDir exists
         if not os.path.exists(tmpDir):
-            logger.error(tmpDir+' does not exist')
+            logger.error('The tmpDir: '+tmpDir+' does not exist')
             sys.exit(1)
         elif os.path.exists(tmpDir):
-            logger.info(tmpDir+" does exist')
+            logger.info('The tmpDir: '+tmpDir+' does exist')
         else:
             logger.error('Checked for tmpDir: '+tmpDir+', and else statement happened')
             sys.exit(1)
