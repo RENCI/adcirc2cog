@@ -116,9 +116,21 @@ def main(args):
             f.write('SPI=org.geotools.data.postgis.PostgisNGDataStoreFactory\nhost=localhost\nport=5432\ndatabase=apsviz_cog_mosaic\nschema=public\nuser=apsviz_cog_mosaic\npasswd=cog_mosaic\nLoose\ bbox=true\nEstimated\ extends=false\nvalidate\ connections=true\nConnection\ timeout=10\npreparedStatements=true\n')
             f.close()
 
+            # Zip finalDir into zip file, and then remove the finalDir
+            logger.info('Zip finalDir '+finalDir)
+            shutil.make_archive(finalDir[:-1], 'zip', root_dir="/".join(finalDir.split('/')[:-2]), base_dir=finalDir.split('/')[-2])
+            logger.info('Ziped finalDir to FinalDir to zip file '+"/".join(finalDir.split('/')[:-2])+'/'+finalDir.split('/')[-2]+'.zip')
+            shutil.rmtree(finalDir)
+            logger.info('Removed finalDir '+finalDir)
         else:
             logger.info('Data is not timeseries so no need to create meta file')
 
+            # Zip finalDir into zip file, and then remove the finalDir
+            logger.info('Zip finalDir '+finalDir)
+            shutil.make_archive(finalDir[:-1], 'zip', root_dir="/".join(finalDir.split('/')[:-2]), base_dir=finalDir.split('/')[-2])
+            logger.info('Ziped finalDir to FinalDir to zip file '+"/".join(finalDir.split('/')[:-2])+'/'+finalDir.split('/')[-2]+'.zip')
+            shutil.rmtree(finalDir)
+            logger.info('Removed finalDir '+finalDir)
     else:
         logger.info(inputDir+' does not exist')
         sys.exit(1)
