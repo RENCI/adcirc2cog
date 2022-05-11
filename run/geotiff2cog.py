@@ -2,15 +2,15 @@
 import sys, os, argparse, shutil, glob
 from pathlib import Path
 from loguru import logger
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, STDOUT
 from multiprocessing.pool import ThreadPool as Pool
 
 # Function creates a process using command from cmd
 def call_proc(cmd):
     # This runs in a separate thread
-    p = Popen(cmd, stdout=PIPE, stderr=PIPE)
-    out, err = p.communicate()
-    return (out, err)
+    p = Popen(cmd, stdout=PIPE, stderr=STDOUT)
+    stdout, stderr = p.communicate()
+    return (stdout, stderr)
 
 def geotiff2cog(inputDir, finalDir):
     # Create empty list for commands
@@ -58,8 +58,14 @@ def geotiff2cog(inputDir, finalDir):
     pool.close()
     pool.join()
     for result in results:
-        out, err = result.get()
-        logger.info("out: {} err: {}".format(out, err))
+        stdout, stderr = result.get()
+        logger.info("stdout: {} stderr: {}".format(stdout, stderr))
+
+        if stderr:
+            logger.error(stderr)
+            sys.exit(1)
+        else:
+            continue
 
     # Create final directory path
     if os.path.exists(finalDir):
