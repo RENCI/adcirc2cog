@@ -57,15 +57,16 @@ def geotiff2cog(inputDir, finalDir):
     # Close the pool and wait for each running task to complete
     pool.close()
     pool.join()
+
+    # Output results to log
     for result in results:
         stdout, stderr = result.get()
-        logger.info("stdout: {} stderr: {}".format(stdout, stderr))
 
         if stderr:
-            logger.error(stderr)
+            logger.info("stdout: {} stderr: {}".format(stdout, stderr))
             sys.exit(1)
         else:
-            continue
+            logger.info("stdout: {} stderr: {}".format(stdout, stderr))
 
     # Create final directory path
     if os.path.exists(finalDir):
@@ -79,8 +80,12 @@ def geotiff2cog(inputDir, finalDir):
 
     # Move cogs to final directory
     for finalPathFile in glob.glob(inputDir+'*.cog.tif'):
-        shutil.move(finalPathFile, finalDir)
-        logger.info('Moved cog file '+finalPathFile.split("/")[-1]+' to '+finalDir+' directory.')
+        try:
+            shutil.move(finalPathFile, finalDir)
+            logger.info('Moved cog file '+finalPathFile.split("/")[-1]+' to '+finalDir+' directory.')
+        except OSError as err:
+            logger.error('Failed to move cog file '+finalPathFile.split("/")[-1]+' to '+finalDir+' directory.')
+            sys.exit(1)
 
 @logger.catch
 def main(args):
@@ -124,19 +129,41 @@ def main(args):
 
             # Zip finalDir into zip file, and then remove the finalDir
             logger.info('Zip finalDir '+finalDir)
-            shutil.make_archive(finalDir[:-1], 'zip', root_dir="/".join(finalDir.split('/')[:-2]), base_dir=finalDir.split('/')[-2])
-            logger.info('Ziped finalDir to FinalDir to zip file '+"/".join(finalDir.split('/')[:-2])+'/'+finalDir.split('/')[-2]+'.zip')
-            shutil.rmtree(finalDir)
-            logger.info('Removed finalDir '+finalDir)
+
+            try:
+                shutil.make_archive(finalDir[:-1], 'zip', root_dir="/".join(finalDir.split('/')[:-2]), base_dir=finalDir.split('/')[-2])
+                logger.info('Ziped finalDir to FinalDir to zip file '+"/".join(finalDir.split('/')[:-2])+'/'+finalDir.split('/')[-2]+'.zip')
+            except OSError as err:
+                logger.error('Problem zipping file '+"/".join(finalDir.split('/')[:-2])+'/'+finalDir.split('/')[-2]+'.zip')
+                sys.exit(1)
+
+            try:
+                shutil.rmtree(finalDir)
+                logger.info('Removed finalDir '+finalDir)
+            except OSError as err:
+                logger.error('Problem removing finalDir '+finalDir)
+                sys.exit(1)
+
         else:
             logger.info('Data is not timeseries so no need to create meta file')
 
             # Zip finalDir into zip file, and then remove the finalDir
             logger.info('Zip finalDir '+finalDir)
-            shutil.make_archive(finalDir[:-1], 'zip', root_dir="/".join(finalDir.split('/')[:-2]), base_dir=finalDir.split('/')[-2])
-            logger.info('Ziped finalDir to FinalDir to zip file '+"/".join(finalDir.split('/')[:-2])+'/'+finalDir.split('/')[-2]+'.zip')
-            shutil.rmtree(finalDir)
-            logger.info('Removed finalDir '+finalDir)
+
+            try:
+                shutil.make_archive(finalDir[:-1], 'zip', root_dir="/".join(finalDir.split('/')[:-2]), base_dir=finalDir.split('/')[-2])
+                logger.info('Ziped finalDir to FinalDir to zip file '+"/".join(finalDir.split('/')[:-2])+'/'+finalDir.split('/')[-2]+'.zip')
+            except OSError as err:
+                logger.error('Problem zipping file '+"/".join(finalDir.split('/')[:-2])+'/'+finalDir.split('/')[-2]+'.zip')
+                sys.exit(1)
+
+            try:
+                shutil.rmtree(finalDir)
+                logger.info('Removed finalDir '+finalDir)
+            except OSError as err:
+                logger.error('Problem removing finalDir '+finalDir)
+                sys.exit(1)
+
     else:
         logger.info(inputDir+' does not exist')
         sys.exit(1)
