@@ -56,7 +56,6 @@ def makeDirs(outputDir):
     # Create cogeo directory path
     if not os.path.exists(outputDir):
         mode = 0o777
-        # os.makedirs(outputDir, mode)
         os.makedirs(outputDir, mode, exist_ok=True)
         logger.info('Made directory '+outputDir+ '.')
     else:
@@ -99,7 +98,6 @@ class mesh2tiff:
             timeStep = 0
 
             # Define map units per pixel
-            #mapUnitPP = 0.001
             mapUnitsPP = [0.005, 0.001, 0.001, 0.005, 0.005, 0.005, 0.005, 0.005]
 
             # Define fileDateTime
@@ -299,9 +297,6 @@ def main(args):
         # Quit QGIS
         app.exitQgis()
         logger.info('Quit QGIS')
-
-        # Remove tmpDir
-        #shutil.rmtree(tmpDir)
 
     else:
          logger.info(inputFile+' does not exist')
