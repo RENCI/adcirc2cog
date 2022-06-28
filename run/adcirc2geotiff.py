@@ -98,13 +98,14 @@ class mesh2tiff:
             timeStep = 0
 
             # Define map units per pixel
-            mapUnitsPP = [0.005, 0.001, 0.001, 0.005, 0.005, 0.005, 0.005, 0.005]
+            mapUnitsPP = [0.01, 0.005, 0.001, 0.001, 0.005, 0.005, 0.005, 0.005, 0.005]
 
             # Define fileDateTime
             fileDateTime = datetime.fromisoformat(str(base_date + timedelta(seconds=times[0]))).strftime("%Y%m%dT%H%M%S")
  
             # Define input extent parameters to create tiff from ADCIRC mesh file
-            inputExtents = ['-77.85833,-60.040029999999994,36.0,45.83612',
+            inputExtents = ['-97.85833,-77.5833,36.0,45.83612',
+                            '-77.85833,-60.040029999999994,36.0,45.83612',
                             '-97.85833,-81.0,23.0,31.273088',
                             '-81.937856,-74.0,23.0,36.555922',
                             '-74.467152,-60.040029999999994,23.0,36.83612',
