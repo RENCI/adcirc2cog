@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2022 Renaissance Computing Institute. All rights reserved.
+
+SPDX-License-Identifier: GPL-3.0-or-later
+SPDX-License-Identifier: LicenseRef-RENCI
+SPDX-License-Identifier: MIT
+-->
+
 # adcirc2cog
 This repo has software that creates a geotiff, and then converts it to a Cloud Optimized Geotiff (COG). This branch supsets the the data.
 
