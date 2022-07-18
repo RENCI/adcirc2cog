@@ -107,6 +107,7 @@ def main(args):
     logger.remove()
     log_path = os.path.join(os.getenv('LOG_PATH', os.path.join(os.path.dirname(__file__), 'logs')), '')
     logger.add(log_path+'geotiff2cog.log', level='DEBUG')
+    logger.add(sys.stderr, level="ERROR")
 
     # Check if input file exists and if it does run geotiff2cog function 
     if os.path.exists(inputDir):

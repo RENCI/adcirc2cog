@@ -265,6 +265,7 @@ def main(args):
     logger.remove()
     log_path = os.path.join(os.getenv('LOG_PATH', os.path.join(os.path.dirname(__file__), 'logs')), '')
     logger.add(log_path+'adcirc2geotiff_vcog.log', level='DEBUG')
+    logger.add(sys.stderr, level="ERROR")
 
     # Check to see if input directory exits and if it does create tiff
     if os.path.exists(inputDir+inputFile):
