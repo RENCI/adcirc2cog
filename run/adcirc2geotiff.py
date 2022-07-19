@@ -252,26 +252,25 @@ class mesh2tiff:
 
 @logger.catch
 def main(args):
-    # get input variables from args
-    inputDir = os.path.join(args.inputDir, '')
-    outputDir = os.path.join(args.outputDir, '')
-    inputFile = args.inputFile
-    outputDir = os.path.join(outputDir+"".join(inputFile[:-3].split('.')), '')
-
-    # Define tmp directory
-    tmpDir = "/".join(inputDir.split("/")[:-2])+"/"+inputFile.split('.')[0]+"_qgis_tmp/"
-
     # Remove old logger and start new one
     logger.remove()
     log_path = os.path.join(os.getenv('LOG_PATH', os.path.join(os.path.dirname(__file__), 'logs')), '')
     logger.add(log_path+'adcirc2geotiff_vcog.log', level='DEBUG')
     logger.add(sys.stderr, level="ERROR")
+    logger.info('Started log file adcirc2geotiff_vcog.log')
+
+    # get input variables from args
+    inputDir = os.path.join(args.inputDir, '')
+    outputDir = os.path.join(args.outputDir, '')
+    inputFile = args.inputFile
+    outputDir = os.path.join(outputDir+"".join(inputFile[:-3].split('.')), '')
+    logger.info('Got input variables including inputDir '+inputDir+'.')
+
+    # Define tmp directory
+    tmpDir = "/".join(inputDir.split("/")[:-2])+"/"+inputFile.split('.')[0]+"_qgis_tmp/"
 
     # Check to see if input directory exits and if it does create tiff
     if os.path.exists(inputDir+inputFile):
-        # When error exit program
-        logger.add(lambda _: sys.exit(1), level="ERROR")
-
         # Make output directory
         makeDirs(outputDir.strip())
 
@@ -308,7 +307,7 @@ def main(args):
         logger.info('Quit QGIS')
 
     else:
-         logger.info(inputFile+' does not exist')
+         logger.info(inputDir+inputFile+' does not exist')
          sys.exit(1)
 
 if __name__ == "__main__":

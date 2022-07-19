@@ -24,34 +24,36 @@ def geotiff2cog(inputDir, finalDir):
     cmds_list = []
 
     # Get list of input tiff files
-    for inputPathFile in glob.glob(inputDir+'*.tif'):
+    inputPathFiles = glob.glob(inputDir+'*.tif')
 
-        # Check if input file exists and if it does run geotiff2cog function
-        if os.path.exists(inputPathFile):
-            # When error exit program
-            logger.add(lambda _: sys.exit(1), level="ERROR")
+    # Check if inputPathFiles list has values
+    if len(inputPathFiles) > 0:
+        for inputPathFile in inputPathFiles:
+            if os.path.exists(inputPathFile):
+                # Log inputPathFile
+                logger.info('The inputPathFile '+inputPathFile.strip()+' so create cog file.')
 
-            logger.info('Create cog file from '+inputPathFile.strip()+' tiff file.')
+                # Define ouput cog file name
+                inputFileList = inputPathFile.split('/')[-1].split('.')
+                inputFileList.insert(-1,'cog')
+                outputFile = ".".join(inputFileList)
 
-            # Define ouput cog file name
-            inputFileList = inputPathFile.split('/')[-1].split('.')
-            inputFileList.insert(-1,'cog')
-            outputFile = ".".join(inputFileList)
+                # Remove cog file if it already exits
+                if os.path.exists(inputDir+outputFile):
+                    os.remove(inputDir+outputFile)
+                    logger.info('Removed old cog file '+inputDir+outputFile+'.')
+                    logger.info('Cogeo path '+inputDir+outputFile+'.')
+                else:
+                    logger.info('Cogeo path '+inputDir+outputFile+'.')
 
-            # Remove cog file if it already exits
-            if os.path.exists(inputDir+outputFile):
-                os.remove(inputDir+outputFile)
-                logger.info('Removed old cog file '+inputDir+outputFile+'.')
-                logger.info('Cogeo path '+inputDir+outputFile+'.')
+                # Define command to create cog
+                cmds_list.append(['rio', 'cogeo', 'create',  inputPathFile, inputDir+outputFile, '--web-optimized'])
             else:
-                logger.info('Cogeo path '+inputDir+outputFile+'.')
-
-            # Difine command to create cog
-            cmds_list.append(['rio', 'cogeo', 'create',  inputPathFile, inputDir+outputFile, '--web-optimized'])
-
-        else:
-            logger.info(inputPathFile+' does not exist')
-            sys.exit(1)
+                logger.info('The inputPathFile '+inputPathFile+' does not exist.')
+                sys.exit(1)
+    else:
+        logger.info('inputPathFiles list has not values')
+        sys.exit(1)
 
     # Define number of CPU to use in pool.
     pool = Pool(processes=4)
@@ -96,24 +98,23 @@ def geotiff2cog(inputDir, finalDir):
 
 @logger.catch
 def main(args):
+    # Remove old logger and start new logger
+    logger.remove()
+    log_path = os.path.join(os.getenv('LOG_PATH', os.path.join(os.path.dirname(__file__), 'logs')), '')
+    logger.add(log_path+'geotiff2cog.log', level='DEBUG')
+    logger.add(sys.stderr, level="ERROR")
+    logger.info('Started log file geotiff2cog.log')
+
     # Get input variables from args
     inputParam = os.path.join(args.inputParam, '')
     inputDir = os.path.join(args.inputDir, '')
     finalDir = os.path.join(args.finalDir, '')
     inputDir = os.path.join(inputDir+inputParam, '')
     finalDir = os.path.join(finalDir+inputParam, '')
-    
-    # Remove old logger and start new logger
-    logger.remove()
-    log_path = os.path.join(os.getenv('LOG_PATH', os.path.join(os.path.dirname(__file__), 'logs')), '')
-    logger.add(log_path+'geotiff2cog.log', level='DEBUG')
-    logger.add(sys.stderr, level="ERROR")
+    logger.info('Got input variables including inputDir '+inputDir+'.')
 
     # Check if input file exists and if it does run geotiff2cog function 
     if os.path.exists(inputDir):
-        # When error exit program
-        logger.add(lambda _: sys.exit(1), level="ERROR")
-
         logger.info('Create cog files in '+inputDir.strip()+' tiff file.')
 
         geotiff2cog(inputDir, finalDir)
