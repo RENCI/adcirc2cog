@@ -308,7 +308,13 @@ def main(args):
 
     else:
          logger.info(inputDir+inputFile+' does not exist')
-         sys.exit(1)
+         if inputFile.startswith("swan"):
+             logger.info('The input file is a swan file : '+inputDir+inputFile+' so do a soft exit') 
+             sys.exit(0)
+         else:
+             logger.info('The input file is not a swan file : '+inputDir+inputFile+' so do a hard exit')
+             sys.exit(1)
+
 
 if __name__ == "__main__":
     """ This is executed when run from the command line """
