@@ -174,12 +174,12 @@ def main(args):
                 sys.exit(1)
 
     else:
-        logger.info(inputDir+inputFile+' does not exist')
-        if inputFile.startswith("swan"):
-            logger.info('The input file is a swan file : '+inputDir+inputFile+' so do a soft exit')
+        logger.info(inputDir+inputParam+' does not exist')
+        if inputParam.startswith("swan"):
+            logger.info('The input file is a swan file so do a soft exit')
             sys.exit(0)
         else:
-            logger.info('The input file is not a swan file : '+inputDir+inputFile+' so do a hard exit')
+            logger.info('The input file is not a swan file so do a hard exit')
             sys.exit(1)
 
 if __name__ == "__main__":
