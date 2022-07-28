@@ -98,6 +98,41 @@ def geotiff2cog(inputDir, finalDir):
 
 @logger.catch
 def main(args):
+    logger.info('Create cog files in '+inputDir.strip()+' tiff file.')
+
+    geotiff2cog(inputDir, finalDir)
+
+    logger.info('Created cog files in '+inputDir.strip()+'.')
+
+    logger.info('Data is not timeseries so no need to create meta file')
+
+    # Zip finalDir into zip file, and then remove the finalDir
+    logger.info('Zip finalDir '+finalDir)
+    try:
+        shutil.make_archive(finalDir[:-1], 'zip', root_dir="/".join(finalDir.split('/')[:-2]), base_dir=finalDir.split('/')[-2])
+        logger.info('Ziped finalDir to FinalDir to zip file '+"/".join(finalDir.split('/')[:-2])+'/'+finalDir.split('/')[-2]+'.zip')
+    except OSError as err:
+        logger.error('Problem zipping file '+"/".join(finalDir.split('/')[:-2])+'/'+finalDir.split('/')[-2]+'.zip')
+        sys.exit(1)
+
+    try:
+        shutil.rmtree(finalDir)
+        logger.info('Removed finalDir '+finalDir)
+    except OSError as err:
+        logger.error('Problem removing finalDir '+finalDir)
+        sys.exit(1)
+
+if __name__ == "__main__":
+    """ This is executed when run from the command line """
+    parser = argparse.ArgumentParser()
+
+    # Optional argument which requires a parameter (eg. -d test)
+    parser.add_argument("--inputPARAM", "--inputParam", help="Input parameter", action="store", dest="inputParam")
+    parser.add_argument("--inputDIR", "--inputDir", help="Input directory path", action="store", dest="inputDir")
+    parser.add_argument("--finalDIR", "--finalDir", help="Final directory path", action="store", dest="finalDir")
+
+    args = parser.parse_args()
+
     # Remove old logger and start new logger
     logger.remove()
     log_path = os.path.join(os.getenv('LOG_PATH', os.path.join(os.path.dirname(__file__), 'logs')), '')
@@ -113,66 +148,9 @@ def main(args):
     finalDir = os.path.join(finalDir+inputParam, '')
     logger.info('Got input variables including inputDir '+inputDir+'.')
 
-    # Check if input file exists and if it does run geotiff2cog function 
+    # Check if input file exists and if it does run geotiff2cog function
     if os.path.exists(inputDir):
-        logger.info('Create cog files in '+inputDir.strip()+' tiff file.')
-
-        geotiff2cog(inputDir, finalDir)
-
-        logger.info('Created cog files in '+inputDir.strip()+'.')
-
-        # If timeseries create meta files for mozaic
-        if finalDir.split('/')[-2].lower().find('max') == -1:
-            logger.info('Create meta file for timeseries mosaic COGs')
-            f = open(finalDir+'indexer.properties', 'w')
-            f.write('TimeAttribute=ingestion\nElevationAttribute=elevation\nSchema=*the_geom:Polygon,location:String,ingestion:java.util.Date,elevation:Integer\nPropertyCollectors=TimestampFileNameExtractorSPI[timeregex](ingestion)\n')
-            f.close()
-
-            f = open(finalDir+'timeregex.properties', 'w')
-            f.write('regex=[0-9]{8}T[0-9]{6}\n')
-            f.close()
-
-            f = open(finalDir+'datastore.properties', 'w')
-            f.write('SPI=org.geotools.data.postgis.PostgisNGDataStoreFactory\nhost=localhost\nport=5432\ndatabase=apsviz_cog_mosaic\nschema=public\nuser=apsviz_cog_mosaic\npasswd=cog_mosaic\nLoose\ bbox=true\nEstimated\ extends=false\nvalidate\ connections=true\nConnection\ timeout=10\npreparedStatements=true\n')
-            f.close()
-
-            # Zip finalDir into zip file, and then remove the finalDir
-            logger.info('Zip finalDir '+finalDir)
-
-            try:
-                shutil.make_archive(finalDir[:-1], 'zip', root_dir="/".join(finalDir.split('/')[:-2]), base_dir=finalDir.split('/')[-2])
-                logger.info('Ziped finalDir to FinalDir to zip file '+"/".join(finalDir.split('/')[:-2])+'/'+finalDir.split('/')[-2]+'.zip')
-            except OSError as err:
-                logger.error('Problem zipping file '+"/".join(finalDir.split('/')[:-2])+'/'+finalDir.split('/')[-2]+'.zip')
-                sys.exit(1)
-
-            try:
-                shutil.rmtree(finalDir)
-                logger.info('Removed finalDir '+finalDir)
-            except OSError as err:
-                logger.error('Problem removing finalDir '+finalDir)
-                sys.exit(1)
-
-        else:
-            logger.info('Data is not timeseries so no need to create meta file')
-
-            # Zip finalDir into zip file, and then remove the finalDir
-            logger.info('Zip finalDir '+finalDir)
-
-            try:
-                shutil.make_archive(finalDir[:-1], 'zip', root_dir="/".join(finalDir.split('/')[:-2]), base_dir=finalDir.split('/')[-2])
-                logger.info('Ziped finalDir to FinalDir to zip file '+"/".join(finalDir.split('/')[:-2])+'/'+finalDir.split('/')[-2]+'.zip')
-            except OSError as err:
-                logger.error('Problem zipping file '+"/".join(finalDir.split('/')[:-2])+'/'+finalDir.split('/')[-2]+'.zip')
-                sys.exit(1)
-
-            try:
-                shutil.rmtree(finalDir)
-                logger.info('Removed finalDir '+finalDir)
-            except OSError as err:
-                logger.error('Problem removing finalDir '+finalDir)
-                sys.exit(1)
-
+        main(inputParam, inputDir, finalDir)
     else:
         logger.info(inputDir+inputParam+' does not exist')
         if inputParam.startswith("swan"):
@@ -181,16 +159,4 @@ def main(args):
         else:
             logger.info('The input file is not a swan file so do a hard exit')
             sys.exit(1)
-
-if __name__ == "__main__":
-    """ This is executed when run from the command line """
-    parser = argparse.ArgumentParser()
-
-    # Optional argument which requires a parameter (eg. -d test)
-    parser.add_argument("--inputPARAM", "--inputParam", help="Input parameter", action="store", dest="inputParam")
-    parser.add_argument("--inputDIR", "--inputDir", help="Input directory path", action="store", dest="inputDir")
-    parser.add_argument("--finalDIR", "--finalDir", help="Final directory path", action="store", dest="finalDir")
-
-    args = parser.parse_args()
-    main(args)
 

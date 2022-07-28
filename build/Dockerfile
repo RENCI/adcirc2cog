@@ -60,7 +60,7 @@ WORKDIR /home/nru/repos
 RUN chmod 777 -R .
 
 # get the repo
-RUN git clone https://github.com/RENCI/adcirc2cog.git
+RUN git clone -b testExit https://github.com/RENCI/adcirc2cog.git
 
 # change to the run directory                        
 WORKDIR /home/nru/repos/adcirc2cog/run
