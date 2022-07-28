@@ -263,7 +263,6 @@ if __name__ == "__main__":
     parser.add_argument("--outputDIR", "--outputDir", help="Output directory path", action="store", dest="outputDir", required=True)
     parser.add_argument("--inputFILE", "--inputFile", help="Input file name", action="store", dest="inputFile", required=True)
     args = parser.parse_args()
-    main(args)
 
     # Remove old logger and start new one
     logger.remove()
@@ -279,7 +278,7 @@ if __name__ == "__main__":
     inputFile = args.inputFile
     logger.info('Got input variables including inputDir '+inputDir+'.')
 
-    logger.info('Modify outputDir: '+outputDir))
+    logger.info('Modify outputDir: '+outputDir)
     outputDir = os.path.join(outputDir+"".join(inputFile[:-3].split('.')), '')
     logger.info('Modified outputDir: '+outputDir)
 
