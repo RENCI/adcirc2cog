@@ -104,8 +104,6 @@ def main(inputParam, inputDir, finalDir):
 
     logger.info('Created cog files in '+inputDir.strip()+'.')
 
-    logger.info('Data is not timeseries so no need to create meta file')
-
     # Zip finalDir into zip file, and then remove the finalDir
     logger.info('Zip finalDir '+finalDir)
     try:
