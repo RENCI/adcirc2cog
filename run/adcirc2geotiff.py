@@ -99,81 +99,44 @@ class mesh2tiff:
                 sys.exit(1)
         ds.close()
 
-        # Check times length, if time equals 1 then data is a max file, if time greater than 1 then data is a timeseries file
-        if len(times) == 1:
-            # Define timestep
-            timeStep = 0
+        # Define timestep
+        timeStep = 0
 
-            # Define map units per pixel
-            mapUnitsPP = [0.01, 0.005, 0.001, 0.001, 0.005, 0.005, 0.005, 0.005, 0.005]
+        # Define map units per pixel
+        mapUnitsPP = [0.01, 0.005, 0.001, 0.001, 0.005, 0.005, 0.005, 0.005, 0.005]
 
-            # Define fileDateTime
-            fileDateTime = datetime.fromisoformat(str(base_date + timedelta(seconds=times[0]))).strftime("%Y%m%dT%H%M%S")
+        # Define fileDateTime
+        fileDateTime = datetime.fromisoformat(str(base_date + timedelta(seconds=times[0]))).strftime("%Y%m%dT%H%M%S")
  
-            # Define input extent parameters to create tiff from ADCIRC mesh file
-            inputExtents = ['-97.85833,-77.5833,36.0,45.83612',
-                            '-77.85833,-60.040029999999994,36.0,45.83612',
-                            '-97.85833,-81.0,23.0,31.273088',
-                            '-81.937856,-74.0,23.0,36.555922',
-                            '-74.467152,-60.040029999999994,23.0,36.83612',
-                            '-97.85833,-77.0,15.0,23.213514',
-                            '-77.85833,-60.040029999999994,15.0,23.213514',
-                            '-97.85833,-77.0,7.909559999999999,15.83612',
-                            '-77.85833,-60.040029999999994,7.909559999999999,15.83612']
+        # Define input extent parameters to create tiff from ADCIRC mesh file
+        inputExtents = ['-97.85833,-77.5833,36.0,45.83612',
+                        '-77.85833,-60.040029999999994,36.0,45.83612',
+                        '-97.85833,-81.0,23.0,31.273088',
+                        '-81.937856,-74.0,23.0,36.555922',
+                        '-74.467152,-60.040029999999994,23.0,36.83612',
+                        '-97.85833,-77.0,15.0,23.213514',
+                        '-77.85833,-60.040029999999994,15.0,23.213514',
+                        '-97.85833,-77.0,7.909559999999999,15.83612',
+                        '-77.85833,-60.040029999999994,7.909559999999999,15.83612']
 
-            # Define input_list and outputFile index
-            inputs_list = []
-            i = 0
+        # Define input_list and outputFile index
+        inputs_list = []
+        i = 0
 
-            # Add variables to input_list
-            logger.info('Create inputs_list, which has multiple extents, and one timeStep')
-            for inputExtent in inputExtents:
-                inputFileList = inputFile.split('.')
-                inputFileList.insert(1,'raw')
-                inputFileList.insert(1,'subset'+str(i))
-                inputFileList[-1] = 'tif'
-                outputFile = ".".join(inputFileList)
-                mapUnitPP = mapUnitsPP[i]
+        # Add variables to input_list
+        logger.info('Create inputs_list, which has multiple extents, and one timeStep')
+        for inputExtent in inputExtents:
+            inputFileList = inputFile.split('.')
+            inputFileList.insert(1,'raw')
+            inputFileList.insert(1,'subset'+str(i))
+            inputFileList[-1] = 'tif'
+            outputFile = ".".join(inputFileList)
+            mapUnitPP = mapUnitsPP[i]
 
-                inputs_list.append([inputDir, inputFile, outputDir, outputFile, inputExtent, timeStep, mapUnitPP])
+            inputs_list.append([inputDir, inputFile, outputDir, outputFile, inputExtent, timeStep, mapUnitPP])
 
-                i = i + 1
+            i = i + 1
 
-        elif len(times) > 1:
-            # Define timeSteps
-            timeSteps = list(range(len(times)))
-
-            # Define map units per pixel
-            mapUnitPP = 0.005
-
-            # Define input extent parameters to create tiff from ADCIRC mesh file
-            #inputExtent = '-97.85833,-60.040029999999994,7.909559999999999,45.83612'
-            inputExtent = '-97.85833,-68.0,24.0,42.0'
-            #inputExtents = ['-97.85833,-68.0,24.0,31.360610', '-82.0,-68.0,31.0,42.0']
-
-            # Define input_list times index
-            inputs_list = []
-            i = 0
-
-            # Add variables to input_lists
-            logger.info('Create inputs_list, which has one extent, and multiple timeStep')
-            for timeStep in timeSteps:
-                # Define fileDateTime
-                fileDateTime = datetime.fromisoformat(str(base_date + timedelta(seconds=times[i]))).strftime("%Y%m%dT%H%M%S")
-
-                inputFileList = inputFile.split('.')
-                inputFileList.insert(2,'raw')
-                inputFileList.insert(2,fileDateTime)
-                inputFileList[-1] = 'tif'
-                outputFile = ".".join(inputFileList)
-
-                inputs_list.append([inputDir, inputFile, outputDir, outputFile, inputExtent, timeStep, mapUnitPP])
-
-                i = i + 1
-
-        else:
-            logger.info('Incorrect times length')
-            sys.exit(1)
 
         # Run exportRaster using multiprocessinng for loop, and imput_list
         logger.info('Run exportRaster in for loop, with inputs_list')
@@ -251,70 +214,45 @@ class mesh2tiff:
             raise Exception('Invalid mesh ('+inputDir+inputFile+') file.')
 
 @logger.catch
-def main(args):
-    # Remove old logger and start new one
-    logger.remove()
-    log_path = os.path.join(os.getenv('LOG_PATH', os.path.join(os.path.dirname(__file__), 'logs')), '')
-    logger.add(log_path+'adcirc2geotiff_vcog.log', level='DEBUG')
-    logger.add(sys.stderr, level="ERROR")
-    logger.info('Started log file adcirc2geotiff_vcog.log')
-
-    # get input variables from args
-    inputDir = os.path.join(args.inputDir, '')
-    outputDir = os.path.join(args.outputDir, '')
-    inputFile = args.inputFile
-    outputDir = os.path.join(outputDir+"".join(inputFile[:-3].split('.')), '')
-    logger.info('Got input variables including inputDir '+inputDir+'.')
-
+def main(inputDir, outputDir, inputFile):
     # Define tmp directory
     tmpDir = "/".join(inputDir.split("/")[:-2])+"/"+inputFile.split('.')[0]+"_qgis_tmp/"
+    logger.info('Create tmpDir: '+tmpDir+' for QGIS')
 
-    # Check to see if input directory exits and if it does create tiff
-    if os.path.exists(inputDir+inputFile):
-        # Make output directory
-        makeDirs(outputDir.strip())
+    # Make output directory
+    makeDirs(outputDir.strip())
 
-        # Set QGIS environment 
-        os.environ['QT_QPA_PLATFORM']='offscreen'
-        xdg_runtime_dir = '/home/nru/adcirc2geotiff'
-        os.makedirs(xdg_runtime_dir, exist_ok=True)
-        os.environ['XDG_RUNTIME_DIR']=xdg_runtime_dir
-        os.makedirs(tmpDir, exist_ok=True)
-        os.environ['TMPDIR'] = tmpDir
-        logger.info('Set QGIS enviroment.')
+    # Set QGIS environment 
+    os.environ['QT_QPA_PLATFORM']='offscreen'
+    xdg_runtime_dir = '/home/nru/adcirc2geotiff'
+    os.makedirs(xdg_runtime_dir, exist_ok=True)
+    os.environ['XDG_RUNTIME_DIR']=xdg_runtime_dir
+    os.makedirs(tmpDir, exist_ok=True)
+    os.environ['TMPDIR'] = tmpDir
+    logger.info('Set QGIS enviroment.')
 
-        # Check if tmpDir exists
-        if not os.path.exists(tmpDir):
-            logger.error('The tmpDir: '+tmpDir+' does not exist')
-            sys.exit(1)
-        elif os.path.exists(tmpDir):
-            logger.info('The tmpDir: '+tmpDir+' does exist')
-        else:
-            logger.error('Checked for tmpDir: '+tmpDir+', and else statement happened')
-            sys.exit(1)
-
-        # Initialize QGIS
-        app = initialize_qgis_application() 
-        app.initQgis()
-        app, processing = initialize_processing(app)
-        logger.info('Initialzed QGIS.')
-
-        # Run mesh2tiff and producer tiff files
-        mesh2tiff(inputDir, outputDir, inputFile, tmpDir)
-
-        # Quit QGIS
-        app.exitQgis()
-        logger.info('Quit QGIS')
-
+    # Check if tmpDir exists
+    if not os.path.exists(tmpDir):
+        logger.error('The tmpDir: '+tmpDir+' does not exist')
+        sys.exit(1)
+    elif os.path.exists(tmpDir):
+        logger.info('The tmpDir: '+tmpDir+' does exist')
     else:
-         logger.info(inputDir+inputFile+' does not exist')
-         if inputFile.startswith("swan"):
-             logger.info('The input file is a swan file : '+inputDir+inputFile+' so do a soft exit') 
-             sys.exit(0)
-         else:
-             logger.info('The input file is not a swan file : '+inputDir+inputFile+' so do a hard exit')
-             sys.exit(1)
+        logger.error('Checked for tmpDir: '+tmpDir+', and else statement happened')
+        sys.exit(1)
 
+    # Initialize QGIS
+    app = initialize_qgis_application() 
+    app.initQgis()
+    app, processing = initialize_processing(app)
+    logger.info('Initialzed QGIS.')
+
+    # Run mesh2tiff and producer tiff files
+    mesh2tiff(inputDir, outputDir, inputFile, tmpDir)
+
+    # Quit QGIS
+    app.exitQgis()
+    logger.info('Quit QGIS')
 
 if __name__ == "__main__":
     """ This is executed when run from the command line """
@@ -325,5 +263,33 @@ if __name__ == "__main__":
     parser.add_argument("--outputDIR", "--outputDir", help="Output directory path", action="store", dest="outputDir", required=True)
     parser.add_argument("--inputFILE", "--inputFile", help="Input file name", action="store", dest="inputFile", required=True)
     args = parser.parse_args()
-    main(args)
+
+    # Remove old logger and start new one
+    logger.remove()
+    log_path = os.path.join(os.getenv('LOG_PATH', os.path.join(os.path.dirname(__file__), 'logs')), '')
+    logger.add(log_path+'adcirc2geotiff_vcog.log', level='DEBUG')
+    logger.add(sys.stdout, level="DEBUG")
+    logger.add(sys.stderr, level="ERROR")
+    logger.info('Started log file adcirc2geotiff_vcog.log')
+
+    # get input variables from args
+    inputDir = os.path.join(args.inputDir, '')
+    outputDir = os.path.join(args.outputDir, '')
+    inputFile = args.inputFile
+    logger.info('Got input variables including inputDir '+inputDir+'.')
+
+    logger.info('Modify outputDir: '+outputDir)
+    outputDir = os.path.join(outputDir+"".join(inputFile[:-3].split('.')), '')
+    logger.info('Modified outputDir: '+outputDir)
+
+    if os.path.exists(inputDir+inputFile):
+        main(inputDir, outputDir, inputFile)
+    else:
+         logger.info(inputDir+inputFile+' does not exist')
+         if inputFile.startswith("swan"):
+             logger.info('The input file is a swan file : '+inputDir+inputFile+' so do a soft exit') 
+             sys.exit(0)
+         else:
+             logger.info('The input file is not a swan file : '+inputDir+inputFile+' so do a hard exit')
+             sys.exit(1)
 
