@@ -47,7 +47,7 @@ FROM python:3.9-slim
 RUN apt-get update
 
 # install wget and bc
-RUN apt-get install -y wget bc
+RUN apt-get install -y wget bc vim libgl1 libgl1-mesa-dev aria2
 
 # clear out the apt cache
 RUN apt-get clean
