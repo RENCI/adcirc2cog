@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-RENCI
 # SPDX-License-Identifier: MIT
 
-name: adcirctocog
+name: adcirc2cog
 channels:
   - conda-forge
 dependencies:
