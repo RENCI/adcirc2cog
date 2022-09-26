@@ -70,8 +70,8 @@ ENV VIRTUAL_ENV /venv
 ENV PATH /venv/bin:$PATH
 
 # Copy in the rest of the code
-COPY run/adcirc2geotiff.py run
-COPY run/geotiff2cog.py run
+COPY run/adcirc2geotiff.py run/adcirc2geotiff.py
+COPY run/geotiff2cog.py run/geotiff2cog.py
 
 # set the python path
 ENV PYTHONPATH=/home/nru/adcirc2cogs/run
