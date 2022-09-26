@@ -32,7 +32,7 @@ RUN conda env create -f environment.yml
 RUN conda install -c conda-forge conda-pack
 
 # conpress the virtual environment
-RUN conda-pack -n adcirc2cogs -o /tmp/env.tar && \
+RUN conda-pack -n adcirctocogs -o /tmp/env.tar && \
   mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
   rm /tmp/env.tar
 
