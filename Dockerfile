@@ -57,10 +57,10 @@ RUN useradd --create-home -u 1000 nru
 USER nru
 
 # Create a directory for the log
-RUN mkdir -p /home/nru/adcirc2cogs/logs
+RUN mkdir -p /home/nru/adcirc2cog/logs
 
 # move the the code location
-WORKDIR /home/nru/adcirc2cogs
+WORKDIR /home/nru/adcirc2cog
 
 # Copy /venv from the previous stage:
 COPY --from=build /venv /venv
@@ -74,7 +74,7 @@ COPY run/adcirc2geotiff.py run/adcirc2geotiff.py
 COPY run/geotiff2cog.py run/geotiff2cog.py
 
 # set the python path
-ENV PYTHONPATH=/home/nru/adcirc2cogs/run
+ENV PYTHONPATH=/home/nru/adcirc2cog/run
 
 # set the location of the output directory
 ENV RUNTIMEDIR=/data
