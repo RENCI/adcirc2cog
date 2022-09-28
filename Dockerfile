@@ -70,18 +70,19 @@ ENV VIRTUAL_ENV /venv
 ENV PATH /venv/bin:$PATH
 
 # Copy in the rest of the code
+RUN mkdir -p /home/nru/adcirc2cog/run
 COPY run/adcirc2geotiff.py run/adcirc2geotiff.py
 COPY run/geotiff2cog.py run/geotiff2cog.py
 
 # set the python path
-ENV PYTHONPATH=/home/nru/adcirc2cog/run
+ENV PYTHONPATH="/venv/share/qgis/python:/venv/share/qgis/python/plugins:/venv/lib/:/home/nru/adcirc2cog/run"
 
 # set the location of the output directory
 ENV RUNTIMEDIR=/data
 ENV PKLDIR=/data/pkldir
 
 # set the log dir. use this for debugging if desired
-ENV LOG_PATH=/data/logs
+ENV LOG_PATH=/home/nru/adcirc2cog/logs
 
 # example command line
 # python adcirc2geotiff.py --inputDIR /data/4271-33-nhcOfcl/input --outputDIR /data/4271-33-nhcOfcl/cogeo --inputFile maxele.63.nc

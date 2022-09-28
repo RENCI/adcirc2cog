@@ -198,7 +198,7 @@ class mesh2tiff:
             os.chdir(self.tmpDir)
             block = QgsMeshUtils.exportRasterBlock( self.layer, dataset_index, crs,
                     transform_context, mupp, extent) 
-            os.chdir('/home/nru/repos/adcirc2cog/run')
+            os.chdir('/home/nru/adcirc2cog/run')
 
             # Write raster to GeoTiff file
             logger.info('Write raster Geotiff ('+output_layer+') file.')
