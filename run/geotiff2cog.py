@@ -56,16 +56,23 @@ def geotiff2cog(inputDir, finalDir):
         sys.exit(1)
 
     # Define number of CPU to use in pool.
+    logger.info('Create pool.')
     pool = Pool(processes=4)
+    logger.info('Pool created.')
 
     # Apply cmds_list to pool, and output to resutls
+    logger.info('Create results array.')
     results = []
     for cmd in cmds_list:
         results.append(pool.apply_async(call_proc, (cmd,)))
 
+    logger.info('Results array created.')
+
     # Close the pool and wait for each running task to complete
+    logger.info('Close pool.')
     pool.close()
     pool.join()
+    logger.info('Pool closed.')
 
     # Output results to log
     for result in results:
