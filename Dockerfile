@@ -54,6 +54,8 @@ RUN apt-get clean
 
 # add user nru and switch to it
 RUN useradd --create-home -u 1000 nru
+RUN mkdir -p /data
+RUN chown nru:nru /data
 USER nru
 
 # Create a directory for the log
@@ -82,7 +84,7 @@ ENV RUNTIMEDIR=/data
 ENV PKLDIR=/data/pkldir
 
 # set the log dir. use this for debugging if desired
-ENV LOG_PATH=/home/nru/adcirc2cog/logs
+ENV LOG_PATH=/data/logs
 
 # example command line
 # python adcirc2geotiff.py --inputDIR /data/4271-33-nhcOfcl/input --outputDIR /data/4271-33-nhcOfcl/cogeo --inputFile maxele.63.nc
