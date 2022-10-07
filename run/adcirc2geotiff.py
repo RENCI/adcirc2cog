@@ -109,7 +109,7 @@ class mesh2tiff:
         fileDateTime = datetime.fromisoformat(str(base_date + timedelta(seconds=times[0]))).strftime("%Y%m%dT%H%M%S")
  
         # Define input extent parameters to create tiff from ADCIRC mesh file
-        inputExtents = ['-97.85833,-77.5833,36.0,45.83612',
+        inputExtents = ['-97.85833,-77.5833,31.0,45.83612',
                         '-77.85833,-60.040029999999994,36.0,45.83612',
                         '-97.85833,-81.0,23.0,31.273088',
                         '-81.937856,-74.0,23.0,36.555922',

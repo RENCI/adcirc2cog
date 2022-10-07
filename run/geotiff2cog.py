@@ -64,6 +64,7 @@ def geotiff2cog(inputDir, finalDir):
     logger.info('Create results array.')
     results = []
     for cmd in cmds_list:
+        logger.info(" ".join(cmd))
         results.append(pool.apply_async(call_proc, (cmd,)))
 
     logger.info('Results array created.')
