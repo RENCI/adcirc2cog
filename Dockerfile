@@ -54,8 +54,6 @@ RUN apt-get clean
 
 # add user nru and switch to it
 RUN useradd --create-home -u 1000 nru
-RUN mkdir -p /data
-RUN chown nru:nru /data
 USER nru
 
 # Create a directory for the log
@@ -78,13 +76,6 @@ COPY run/geotiff2cog.py run/geotiff2cog.py
 
 # set the python path
 ENV PYTHONPATH="/venv/share/qgis/python:/venv/share/qgis/python/plugins:/venv/lib/:/home/nru/adcirc2cog/run"
-
-# set the location of the output directory
-ENV RUNTIMEDIR=/data
-ENV PKLDIR=/data/pkldir
-
-# set the log dir. use this for debugging if desired
-ENV LOG_PATH=/data/logs
 
 # example command line
 # python adcirc2geotiff.py --inputDIR /data/4271-33-nhcOfcl/input --outputDIR /data/4271-33-nhcOfcl/cogeo --inputFile maxele.63.nc
