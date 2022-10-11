@@ -56,9 +56,6 @@ RUN apt-get clean
 RUN useradd --create-home -u 1000 nru
 USER nru
 
-# Create a directory for the log
-RUN mkdir -p /home/nru/adcirc2cog/logs
-
 # move the the code location
 WORKDIR /home/nru/adcirc2cog
 
