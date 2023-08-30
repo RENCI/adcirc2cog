@@ -7,7 +7,13 @@
 # SPDX-License-Identifier: MIT
 
 # Import Python modules
-import os, sys, argparse, shutil, json, warnings, pdb
+import os
+import sys
+import argparse
+import shutil
+import json
+import warnings
+import subprocess
 import netCDF4 as nc
 import numpy as np
 from datetime import datetime
@@ -226,6 +232,7 @@ def main(inputDir, outputDir, inputFile):
     os.environ['QT_QPA_PLATFORM']='offscreen'
     xdg_runtime_dir = '/home/nru/adcirc2geotiff'
     os.makedirs(xdg_runtime_dir, exist_ok=True)
+    subprocess.call(['chmod', '0700', xdg_runtime_dir])
     os.environ['XDG_RUNTIME_DIR']=xdg_runtime_dir
     os.makedirs(tmpDir, exist_ok=True)
     os.environ['TMPDIR'] = tmpDir
