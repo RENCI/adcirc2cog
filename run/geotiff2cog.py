@@ -101,8 +101,7 @@ def geotiff2cog(inputDir, finalDir):
             shutil.move(finalPathFile, finalDir)
             logger.info('Moved cog file '+finalPathFile.split("/")[-1]+' to '+finalDir+' directory.')
         except OSError as err:
-            logger.error('Failed to move cog file '+finalPathFile.split("/")[-1]+' to '+finalDir+' directory.')
-            sys.exit(1)
+            logger.exception(err)
 
 @logger.catch
 def main(inputParam, inputDir, finalDir):
@@ -118,15 +117,13 @@ def main(inputParam, inputDir, finalDir):
         shutil.make_archive(finalDir[:-1], 'zip', root_dir="/".join(finalDir.split('/')[:-2]), base_dir=finalDir.split('/')[-2])
         logger.info('Ziped finalDir to FinalDir to zip file '+"/".join(finalDir.split('/')[:-2])+'/'+finalDir.split('/')[-2]+'.zip')
     except OSError as err:
-        logger.error('Problem zipping file '+"/".join(finalDir.split('/')[:-2])+'/'+finalDir.split('/')[-2]+'.zip')
-        sys.exit(1)
+        logger.exception(err)
 
     try:
         shutil.rmtree(finalDir)
         logger.info('Removed finalDir '+finalDir)
     except OSError as err:
-        logger.error('Problem removing finalDir '+finalDir)
-        sys.exit(1)
+        logger.exception(err)
 
 if __name__ == "__main__":
     """ This is executed when run from the command line """
