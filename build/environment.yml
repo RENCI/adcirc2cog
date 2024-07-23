@@ -11,5 +11,5 @@ dependencies:
   - python=3.9
   - qgis=3.32.2
   - netcdf4=1.6.4
-  - rio-cogeo=5.0.0
+  - rio-cogeo=5.3.3
   - loguru=0.6.0
