@@ -55,4 +55,4 @@ jobs:
           secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           region: us-east-2
           local-image: ${{ env.REGISTRY }}:${{ steps.get_version.outputs.VERSION }}
-          image: adcirctime2cogs:latest, adcirctime2cogs:${{ steps.get_version.outputs.VERSION }}
+          image: adcirc2cog:latest, adcirc2cog:${{ steps.get_version.outputs.VERSION }}
