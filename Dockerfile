@@ -42,7 +42,7 @@ RUN /venv/bin/conda-unpack
 ##############
 # stage 2: create a python implementation using the stage 1 virtual environment
 ##############
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 RUN apt-get update
 

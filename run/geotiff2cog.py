@@ -154,7 +154,7 @@ if __name__ == "__main__":
     logger.remove()
     log_path = os.path.join(os.getenv('LOG_PATH',
                                       os.path.join(os.path.dirname(__file__), 'logs')), '')
-    logger.add(log_path+'geotiff2cog.log', level='DEBUG')
+    logger.add(log_path+'geotiff2cog.log', level='DEBUG', rotation="1 MB")
     logger.add(sys.stdout, level="DEBUG")
     logger.add(sys.stderr, level="ERROR")
     logger.info('Started log file geotiff2cog.log')
