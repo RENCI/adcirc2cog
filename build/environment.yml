@@ -8,8 +8,9 @@ name: adcirc2cog
 channels:
   - conda-forge
 dependencies:
-  - python=3.9
-  - qgis=3.32.2
-  - netcdf4=1.6.4
+  - python=3.10
+  - pdal=2.7.2
+  - qgis=3.38.1
+  - netcdf4=1.7.1
   - rio-cogeo=5.3.3
   - loguru=0.6.0
