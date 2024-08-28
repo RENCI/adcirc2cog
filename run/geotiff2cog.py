@@ -137,6 +137,10 @@ def main(**kwargs):
     except OSError as err:
         logger.exception(err)
 
+    # Use sys.exit(0) to exit from program for k8s
+    logger.info('Use sys.exit(0) to exit from program for k8s')
+    sys.exit(0)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
