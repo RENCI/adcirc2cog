@@ -121,25 +121,28 @@ def main(**kwargs):
 
     # Zip finalDir into zip file, and then remove the finalDir
     logger.info('Zip finalDir '+kwargs['finalDirPath'],)
+
     try:
         shutil.make_archive(kwargs['finalDirPath'][:-1], 'zip',
                             root_dir="/".join(kwargs['finalDirPath'].split('/')[:-2]),
                             base_dir=kwargs['finalDirPath'].split('/')[-2])
+
         logger.info('Ziped finalDir to FinalDir to zip file '+
                     "/".join(kwargs['finalDirPath'].split('/')[:-2])+
                     '/'+kwargs['finalDirPath'].split('/')[-2]+'.zip')
-    except OSError as err:
-        logger.exception(err)
 
-    try:
         shutil.rmtree(kwargs['finalDirPath'])
-        logger.info('Removed finalDir '+kwargs['finalDirPath'])
-    except OSError as err:
-        logger.exception(err)
+
+        logger.info('Removed finalDir ' + kwargs['finalDirPath'])
+
+    except OSError:
+        logger.exception('Error in main')
+        logger.flush()
+        sys.exit(1)
 
     # Use sys.exit(0) to exit from program for k8s
-    logger.info('Use sys.exit(0) to exit from program for k8s')
-    sys.exit(0)
+    # logger.info('Use sys.exit(0) to exit from program for k8s')
+    # sys.exit(0)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -173,12 +176,17 @@ if __name__ == "__main__":
 
     # Check if input file exists and if it does run geotiff2cog function
     if os.path.exists(inputDir):
-        main(inputDirPath = inputDir, finalDirPath = finalDir)
-    else:
-        logger.info(inputDir+inputParam+' does not exist')
-        if inputParam.startswith("swan"):
-            logger.info('The input file is a swan file so do a soft exit')
-            sys.exit(0)
-        else:
-            logger.info('The input file is not a swan file so do a hard exit')
+        try:
+            main(inputDirPath = inputDir, finalDirPath = finalDir)
+        except Exception:
+            logger.exception("General exception detected %s", '<some unique id so you can investigate further>')
+            logger.flush()
             sys.exit(1)
+    else:
+        if not inputParam.startswith("swan"):
+            logger.error('Error: Exiting - ' + inputDir + inputParam + ' does not exist')
+            logger.flush()
+            sys.exit(1)
+
+    # otherwise exit normally
+    sys.exit(0)
