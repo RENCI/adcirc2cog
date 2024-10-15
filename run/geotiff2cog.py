@@ -15,7 +15,8 @@ import argparse
 import shutil
 import glob
 from subprocess import Popen, PIPE, STDOUT
-from multiprocessing.pool import ThreadPool as Pool
+# from multiprocessing.pool import ThreadPool as Pool
+from multiprocessing.pool import Pool
 
 from loguru import logger
 
